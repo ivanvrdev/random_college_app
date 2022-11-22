@@ -1,5 +1,10 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
+import { useState, useEffect } from "react"
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native"
 import { useNavigation } from "@react-navigation/native"
+
+import Post from "../../components/Post"
+
+import { REACT_APP_BACKEND as backend} from "@env" 
 
 const Link = ({text, to}) => {
   
@@ -16,15 +21,34 @@ const Link = ({text, to}) => {
 }
 
 const Home = () => {
+
+  const [posts, setPosts] = useState(null)
+
+  const getPosts = async () => {
+    const response = await fetch(`${backend}/public/post`)
+
+    const data = await response.json()
+
+    setPosts(data.posts.reverse())
+  }
+
+  useEffect(()=>{
+    getPosts()
+  }, [])
+
   return (
-    <View style={styles.container}>
-      <Text>Home</Text>
+    <ScrollView style={styles.container}>
+      {/* <Text>Home</Text>
       <Link text={'Notas'} to={'Grades'}/>
       <Link text={'Personas'} to={'People'}/>
       <Link text={'Perfil'} to={'Profile'}/>
       <Link text={'Materia'} to={'Subject'}/>
-      <Link text={'Materias'} to={'Subjects'}/>
-    </View>
+      <Link text={'Materias'} to={'Subjects'}/> */}
+      {
+        posts &&
+        posts.map((post, index) => <Post key={index} {...post} />)
+      }
+    </ScrollView>
   )
 }
 
