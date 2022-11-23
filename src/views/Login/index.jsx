@@ -62,7 +62,7 @@ const Login = () => {
 
       const { token, user } = data
 
-      dispatch({type: 'LOGIN', payload: { token, user }})
+      dispatch({type: '@SESSION/LOGIN', payload: { token, user }})
       navigation.navigate('Home')
     } catch (error) {
       console.log('Error al loguear: ', error)

@@ -1,35 +1,23 @@
-import { useState, useEffect } from "react"
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native"
-import { useNavigation } from "@react-navigation/native"
+import { useEffect, useContext } from "react"
+import { StyleSheet, ScrollView } from "react-native"
 
 import Post from "../../components/Post"
+import PostInput from "../../components/PostInput"
+
+import { SessionContext } from "../../contexts/SessionContext"
 
 import { REACT_APP_BACKEND as backend} from "@env" 
 
-const Link = ({text, to}) => {
-  
-  const navigation = useNavigation()
-
-  return (
-    <TouchableOpacity
-      style={styles.link}
-      onPress={()=>navigation.navigate(to)}
-    >
-      <Text>{text}</Text>
-    </TouchableOpacity>
-  )
-}
-
 const Home = () => {
 
-  const [posts, setPosts] = useState(null)
+  const { state: { posts }, dispatch } = useContext(SessionContext)
 
   const getPosts = async () => {
     const response = await fetch(`${backend}/public/post`)
 
     const data = await response.json()
 
-    setPosts(data.posts.reverse())
+    dispatch({type: '@POST/LOAD', payload: data.posts.reverse()})
   }
 
   useEffect(()=>{
@@ -38,12 +26,7 @@ const Home = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* <Text>Home</Text>
-      <Link text={'Notas'} to={'Grades'}/>
-      <Link text={'Personas'} to={'People'}/>
-      <Link text={'Perfil'} to={'Profile'}/>
-      <Link text={'Materia'} to={'Subject'}/>
-      <Link text={'Materias'} to={'Subjects'}/> */}
+      <PostInput />
       {
         posts &&
         posts.map((post, index) => <Post key={index} {...post} />)

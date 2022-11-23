@@ -4,7 +4,8 @@ export const SessionContext = createContext()
 
 const initialState = {
   token: null,
-  user: null
+  user: null,
+  posts: null
 }
 
 const sessionReducer = (state, action) =>{
@@ -12,8 +13,10 @@ const sessionReducer = (state, action) =>{
   const { type, payload } = action
 
   const actions = {
-    'LOGIN': () => ({...state, user: payload.user, token: payload.token}),
-    'LOGOUT': () => initialState
+    '@SESSION/LOGIN': () => ({...state, user: payload.user, token: payload.token}),
+    '@SESSION/LOGOUT': () => initialState,
+    '@POSTS/LOAD': () => ({...state, posts: payload}),
+    '@POSTS/ADD': () => ({...state, posts: [payload, ...state.posts]})
   }
 
   return actions[type] ? actions[type]() : state 
