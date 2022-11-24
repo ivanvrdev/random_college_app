@@ -1,18 +1,94 @@
-import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native'
+import { useContext } from 'react'
+import { ActivityIndicator, View, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { Formik } from 'formik'
+import * as Yup from 'yup'
 
-const CommentInput = () => {
+import { DefaultErrorAlert } from './ErrorAlert'
+
+import { SessionContext } from '../contexts/SessionContext'
+
+import { REACT_APP_BACKEND as backend } from '@env'
+
+const commentSchema = Yup.object({
+  description: Yup.string()
+  .required()
+  .min(5)
+  .max(100)
+})
+
+const CommentInput = ({postId, comments}) => {
+
+  const { state, dispatch } = useContext(SessionContext)
+
+  const sendData = async ({ description }) => {
+    
+    const body = JSON.stringify({
+      comments: [
+        ...comments,
+        {
+          author: state.user._id,
+          description
+        }
+      ]
+    })
+    
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        token: state.token
+      },
+      method: 'PUT',
+      body
+    }
+
+    try {
+      const response = await fetch(`${backend}/post/update/${postId}`, config)
+
+      if(!response.ok) {
+        DefaultErrorAlert()
+        return
+      }
+
+      const data = await response.json()
+
+      dispatch({type: '@POSTS/UPDATE_ONE', payload: {postId, updatedPost: data.post}})
+    } catch(error) {
+      DefaultErrorAlert()
+      console.log(error)
+    }
+  }
+  
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder='Escribe un comentario...' 
-      />
-      <TouchableOpacity
-        style={styles.submit}
+      <Formik
+        initialValues={{description: ''}}
+        validationSchema={commentSchema}
+        onSubmit={sendData}
       >
-        <Ionicons name="send" size={24} color="black" />
-      </TouchableOpacity>
+        {({handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting}) => (
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder='Escribe un comentario...'
+              onChangeText={handleChange('description')}
+              onBlur={handleBlur('description')}
+              value={values.description}
+            />
+            <TouchableOpacity
+              style={styles.submit}
+              onPress={handleSubmit}
+              disabled={!(Object.keys(errors).length === 0 && Object.keys(touched).length === 1)}
+            >
+              { 
+                isSubmitting ?
+                <ActivityIndicator color="#000"/> :
+                <Ionicons name="send" size={24} color="black" />
+              }
+            </TouchableOpacity>
+          </>
+        )}
+      </Formik>
     </View>
   )
 }

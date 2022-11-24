@@ -58,7 +58,6 @@ const Post = ({_id, content, comments = [], author, creation_date}) => {
             style={styles.modalClose}
             onPress={()=>setModalVisible(false)}
           >
-            {/* Volver atrás en lugar de close */}
             <Ionicons name='arrow-back' size={30} color='black' />
           </TouchableOpacity>
           <Text style={styles.modalTopText}>Comentarios</Text>
@@ -66,7 +65,7 @@ const Post = ({_id, content, comments = [], author, creation_date}) => {
         <ScrollView>
           {comments.map((comment, index) => <Comment key={index} {...comment}/>)}
         </ScrollView>
-        <CommentInput />
+        <CommentInput comments={comments} postId={_id}/>
       </Modal>
     </>
   )

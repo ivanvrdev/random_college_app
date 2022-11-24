@@ -15,6 +15,7 @@ import { Formik } from 'formik'
 import * as Yup from 'yup'
 
 import Avatar from './Avatar'
+import { DefaultErrorAlert } from './ErrorAlert'
 
 import { SessionContext } from '../contexts/SessionContext'
 
@@ -33,21 +34,9 @@ const postSchema = Yup.object({
 
 const PostInput = () => {
 
-  const { state } = useContext(SessionContext)
+  const { state, dispatch } = useContext(SessionContext)
 
   const [ modalVisible, setModalVisible ] = useState(false)
-
-  const CreateErrorAlert = () => (
-    Alert.alert(
-      'Ocurrió un error',
-      'Inténtelo de nuevo más tarde',
-      [
-        {
-          text: 'Ok'
-        }
-      ]
-    )
-  )
 
   const sendData = async ({header, description}) => {
     const body = {
@@ -70,14 +59,16 @@ const PostInput = () => {
       const response = await fetch(`${backend}/post/create`, config)
   
       if(!response.ok) {
-        CreateErrorAlert()
+        DefaultErrorAlert()
         return
       }
 
+      const data = await response.json()
+
+      dispatch({type: '@POSTS/ADD', payload: data.post})      
       setModalVisible(false)
-      
     }catch(error) {
-      CreateErrorAlert()
+      DefaultErrorAlert()
       console.log(error)
     }
   }

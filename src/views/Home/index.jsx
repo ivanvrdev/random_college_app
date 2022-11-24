@@ -17,7 +17,7 @@ const Home = () => {
 
     const data = await response.json()
 
-    dispatch({type: '@POST/LOAD', payload: data.posts.reverse()})
+    dispatch({type: '@POSTS/LOAD', payload: data.posts.reverse()})
   }
 
   useEffect(()=>{
