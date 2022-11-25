@@ -7,13 +7,14 @@ import * as Yup from 'yup'
 import { DefaultErrorAlert } from './ErrorAlert'
 
 import { SessionContext } from '../contexts/SessionContext'
+import globalStyles from '../style/style'
 
 import { REACT_APP_BACKEND as backend } from '@env'
 
 const commentSchema = Yup.object({
   description: Yup.string()
   .required()
-  .min(5)
+  .min(3)
   .max(100)
 })
 
@@ -66,28 +67,33 @@ const CommentInput = ({postId, comments}) => {
         validationSchema={commentSchema}
         onSubmit={sendData}
       >
-        {({handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting}) => (
-          <>
-            <TextInput
-              style={styles.input}
-              placeholder='Escribe un comentario...'
-              onChangeText={handleChange('description')}
-              onBlur={handleBlur('description')}
-              value={values.description}
-            />
-            <TouchableOpacity
-              style={styles.submit}
-              onPress={handleSubmit}
-              disabled={!(Object.keys(errors).length === 0 && Object.keys(touched).length === 1)}
-            >
-              { 
-                isSubmitting ?
-                <ActivityIndicator color="#000"/> :
-                <Ionicons name="send" size={24} color="black" />
-              }
-            </TouchableOpacity>
-          </>
-        )}
+        {({handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting}) => {
+          
+          let disabled = !(Object.keys(errors).length === 0 && Object.keys(touched).length === 1) 
+
+          return (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder='Escribe un comentario...'
+                onChangeText={handleChange('description')}
+                onBlur={handleBlur('description')}
+                value={values.description}
+              />
+              <TouchableOpacity
+                style={styles.submit}
+                onPress={handleSubmit}
+                disabled={disabled}
+              >
+                { 
+                  isSubmitting ?
+                  <ActivityIndicator color="#000"/> :
+                  <Ionicons name="send" size={24} color={disabled ? globalStyles.secondaryColor : globalStyles.primaryColor} />
+                }
+              </TouchableOpacity>
+            </>
+          )
+        }}
       </Formik>
     </View>
   )

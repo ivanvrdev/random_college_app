@@ -11,8 +11,12 @@ import {
 import { useNavigation } from "@react-navigation/native"
 import { Formik } from "formik"
 import * as Yup from "yup"
+import { FontAwesome5 } from "@expo/vector-icons"
+import { MaterialIcons } from "@expo/vector-icons"
 
 import { SessionContext } from "../../contexts/SessionContext"
+
+import gobalStyles from '../../style/style'
 
 import { REACT_APP_BACKEND as backend} from "@env"
 
@@ -72,7 +76,7 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Iniciar sesión</Text>
+      <Text style={styles.title}>Instituto Random</Text>
       <Formik
         initialValues={{
           username: '',
@@ -81,38 +85,49 @@ const Login = () => {
         validationSchema={loginSchema}
         onSubmit={sendData}
       >
-        {({handleBlur, handleChange, handleSubmit, values, errors, touched, isSubmitting}) => (
+        {({handleBlur, handleChange, handleSubmit, values, errors, touched, isSubmitting}) => {
+          
+          const disabled = !(Object.keys(errors).length === 0 && Object.keys(touched).length === 2)
+          
+          return (
           <>
-            <TextInput
-              style={[styles.input, errors.username && styles.inputError]} 
-              placeholder="nombre de usuario"
-              onBlur={handleBlur('username')}
-              onChangeText={handleChange('username')}
-              value={values.username}
-            />
-            {errors.username && <Text style={styles.textError}>{errors.username}</Text>}
-            <TextInput 
-              style={[styles.input, errors.password && styles.inputError]}
-              placeholder="contraseña"
-              secureTextEntry={true}
-              onBlur={handleBlur('password')}
-              onChangeText={handleChange('password')}
-              value={values.password}
-            />
-            {errors.password && <Text style={styles.textError}>{errors.password}</Text>}
+            <View style={styles.inputGroup}>
+              <View style={styles.inputContainer}>
+                <FontAwesome5 name="user" size={24} color="black" />  
+                <TextInput
+                  style={styles.input} 
+                  placeholder="usuario"
+                  onBlur={handleBlur('username')}
+                  onChangeText={handleChange('username')}
+                  value={values.username}
+                />
+              </View>
+              <View style={styles.divider}></View>
+              <View style={styles.inputContainer}>
+                <MaterialIcons name="lock-outline" size={24} color="black" /> 
+                <TextInput
+                  style={styles.input}
+                  placeholder="contraseña"
+                  secureTextEntry={true}
+                  onBlur={handleBlur('password')}
+                  onChangeText={handleChange('password')}
+                  value={values.password}
+                />
+              </View>
+            </View>
             <TouchableOpacity 
-              style={styles.submit}
-              disabled={!(Object.keys(errors).length === 0 && Object.keys(touched).length === 2)} 
+              style={[styles.submit, disabled && styles.disabledSubmit]}
+              disabled={disabled} 
               onPress={handleSubmit}
             >
               {
                 isSubmitting ? 
                 <ActivityIndicator color="#ffffff"/> :
-                <Text style={styles.submitText}>Enviar</Text>
+                <Text style={styles.submitText}>Continuar</Text>
               }
             </TouchableOpacity>
           </>
-        )}
+        )}}
       </Formik>
     </View>
   )
@@ -121,37 +136,49 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#f9f9f9',
+    justifyContent: 'center'
+  },
+  inputGroup: {
+    backgroundColor: '#ffffff',
+    marginHorizontal: 20,
+    borderRadius: 10
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    padding: 10,
+    alignItems: 'center'
   },
   input: {
-    height: 40,
-    margin: 10,
-    padding: 10,
-    borderWidth: 1
-  },
-  inputError: {
-    borderColor: 'red',
-    marginBottom: 0
-  },
-  textError: {
     marginLeft: 10,
-    color: 'red'
+    width: '85%',
+    fontSize: 20
   },
   submit: {
-    height: 40,
-    margin: 10,
+    padding: 10,
+    marginTop: 20,
+    marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2898ee'
+    backgroundColor: gobalStyles.primaryColor,
+    borderRadius: 20
+  },
+  disabledSubmit: {
+    backgroundColor: gobalStyles.secondaryColor
   },
   submitText: {
-    color: 'white'
+    color: 'white',
+    fontSize: 20
   },
   title: {
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 30,
-    marginTop: 10
+    marginBottom: 10
+  },
+  divider: {
+    height: 2,
+    backgroundColor: '#f0f0f0'
   }
 })
 

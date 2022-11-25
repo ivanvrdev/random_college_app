@@ -19,16 +19,18 @@ import { DefaultErrorAlert } from './ErrorAlert'
 
 import { SessionContext } from '../contexts/SessionContext'
 
+import globalStyles from '../style/style'
+
 import { REACT_APP_BACKEND as backend } from '@env'
 
 const postSchema = Yup.object({
   header: Yup.string()
   .required('Campo requerido')
-  .min(5, 'Demasiado corto')
+  .min(3, 'Demasiado corto')
   .max(50, 'Demasiado largo'),
   description: Yup.string()
   .required('Campo requerido')
-  .min(5, 'Demasiado corto')
+  .min(3, 'Demasiado corto')
   .max(200, 'Demasiado largo')
 })
 
@@ -93,7 +95,11 @@ const PostInput = () => {
           validationSchema={postSchema}
           onSubmit={sendData}
         >
-          {({handleBlur, handleChange, handleSubmit, errors, touched, values, isSubmitting})=>(
+          {({handleBlur, handleChange, handleSubmit, errors, touched, values, isSubmitting})=>{
+            
+            const disabled = !(Object.keys(errors).length === 0 && Object.keys(touched).length === 2)
+
+            return (
             <>
               <View style={styles.modalTopContainer}>
                 <TouchableOpacity
@@ -103,9 +109,9 @@ const PostInput = () => {
                   <Ionicons name='close' size={30} color='black' />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={styles.submit}
+                  style={[styles.submit, disabled && styles.disabledSubmit]}
                   onPress={handleSubmit}
-                  disabled={!(Object.keys(errors).length === 0 && Object.keys(touched).length === 2)}
+                  disabled={disabled}
                 >
                   {
                     isSubmitting ? 
@@ -137,7 +143,7 @@ const PostInput = () => {
                 </View>
               </View>
             </>
-          )}
+          )}}
         </Formik>
       </Modal>
     </>
@@ -175,8 +181,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00b4ff'
+    backgroundColor: globalStyles.primaryColor
   },
+  disabledSubmit: {
+    backgroundColor: globalStyles.secondaryColor
+  },  
   submitText: {
     color: 'white'
   },
